@@ -1,0 +1,45 @@
+[project]
+name = "finance-ai-analyst"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Mohak Parekh", email = "mohakparekh2899@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "alembic>=1.14",
+    "psycopg[binary]>=3.2",
+    "sqlalchemy>=2.0",
+]
+
+[dependency-groups]
+dev = [
+    "black>=25.0.0",
+    "langfuse>=4.0.0",
+    "pytest>=8.0.0",
+]
+
+[project.scripts]
+finance-ai-analyst = "finance_ai_analyst:main"
+
+[build-system]
+requires = ["uv_build>=0.12.10,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.black]
+line-length = 88
+target-version = ["py313"]
+extend-exclude = '''
+/(?:
+    \.venv
+  | data/uploads
+)/
+'''
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = "-ra"
+pythonpath = ["."]
