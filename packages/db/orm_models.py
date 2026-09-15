@@ -33,6 +33,10 @@ from packages.domain.models import (
 )
 
 
+def _enum_values(enum_class: type[Any]) -> list[str]:
+    return [member.value for member in enum_class]
+
+
 class Base(DeclarativeBase):
     """Base class shared by all PostgreSQL ORM mappings."""
 
@@ -150,13 +154,22 @@ class TransactionModel(Base):
     description: Mapped[str] = mapped_column(Text)
     amount_paise: Mapped[int] = mapped_column(nullable=False)
     direction: Mapped[TransactionDirection] = mapped_column(
-        Enum(TransactionDirection, name="transaction_direction"), nullable=False
+        Enum(
+            TransactionDirection,
+            name="transaction_direction",
+            values_callable=_enum_values,
+        ),
+        nullable=False,
     )
     currency: Mapped[str] = mapped_column(
         String(3), nullable=False, server_default="INR"
     )
     status: Mapped[TransactionStatus] = mapped_column(
-        Enum(TransactionStatus, name="transaction_status"),
+        Enum(
+            TransactionStatus,
+            name="transaction_status",
+            values_callable=_enum_values,
+        ),
         nullable=False,
         server_default=TransactionStatus.POSTED.value,
     )
@@ -209,7 +222,11 @@ class DuplicateCandidateModel(Base):
     )
     confidence_basis: Mapped[str] = mapped_column(Text)
     status: Mapped[DuplicateCandidateStatus] = mapped_column(
-        Enum(DuplicateCandidateStatus, name="duplicate_candidate_status"),
+        Enum(
+            DuplicateCandidateStatus,
+            name="duplicate_candidate_status",
+            values_callable=_enum_values,
+        ),
         nullable=False,
         server_default=DuplicateCandidateStatus.PENDING_REVIEW.value,
     )
