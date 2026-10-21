@@ -1,6 +1,7 @@
 from packages.db import (
     Base,
     DuplicateCandidateModel,
+    FinancialPeriodModel,
     ParsedStatementRowModel,
     StatementSourceModel,
     TransactionModel,
@@ -11,6 +12,7 @@ from packages.db import (
 def test_postgresql_orm_registers_all_finance_tables() -> None:
     assert set(Base.metadata.tables) == {
         "duplicate_candidates",
+        "financial_periods",
         "parsed_statement_rows",
         "statement_sources",
         "transactions",
@@ -21,6 +23,7 @@ def test_postgresql_orm_registers_all_finance_tables() -> None:
     assert ParsedStatementRowModel.__tablename__ == "parsed_statement_rows"
     assert TransactionModel.__tablename__ == "transactions"
     assert DuplicateCandidateModel.__tablename__ == "duplicate_candidates"
+    assert FinancialPeriodModel.__tablename__ == "financial_periods"
 
 
 def test_transaction_schema_enforces_paise_and_raw_row_provenance() -> None:

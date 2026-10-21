@@ -28,6 +28,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from packages.domain.models import (
     DuplicateCandidateStatus,
+    StatementProcessingStatus,
     TransactionDirection,
     TransactionStatus,
 )
@@ -66,6 +67,25 @@ class UserModel(Base):
     )
 
 
+class FinancialPeriodModel(Base):
+    __tablename__ = "financial_periods"
+    __table_args__ = (
+        UniqueConstraint("id", "user_id"),
+        UniqueConstraint("user_id", "starts_on", "ends_on"),
+        CheckConstraint("ends_on >= starts_on", name="valid_financial_period_range"),
+        ForeignKeyConstraint(["user_id"], ["users.id"], ondelete="RESTRICT"),
+    )
+
+    id: Mapped[UUID] = mapped_column(
+        PostgreSQLUUID(as_uuid=True), primary_key=True, default=uuid4
+    )
+    user_id: Mapped[UUID] = mapped_column(
+        PostgreSQLUUID(as_uuid=True), nullable=False, index=True
+    )
+    starts_on: Mapped[date] = mapped_column(Date, nullable=False)
+    ends_on: Mapped[date] = mapped_column(Date, nullable=False)
+
+
 class StatementSourceModel(Base):
     __tablename__ = "statement_sources"
     __table_args__ = (
@@ -79,6 +99,9 @@ class StatementSourceModel(Base):
     user_id: Mapped[UUID] = mapped_column(
         PostgreSQLUUID(as_uuid=True), nullable=False, index=True
     )
+    financial_period_id: Mapped[UUID] = mapped_column(
+        PostgreSQLUUID(as_uuid=True), nullable=False, index=True
+    )
     provider: Mapped[str] = mapped_column(String(100))
     original_filename: Mapped[str] = mapped_column(String(512))
     storage_key: Mapped[str] = mapped_column(String(1024), unique=True)
@@ -86,9 +109,25 @@ class StatementSourceModel(Base):
     uploaded_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
+    content_type: Mapped[str] = mapped_column(String(100), nullable=False)
+    file_size_bytes: Mapped[int] = mapped_column(nullable=False)
+    processing_status: Mapped[StatementProcessingStatus] = mapped_column(
+        Enum(
+            StatementProcessingStatus,
+            name="statement_processing_status",
+            values_callable=_enum_values,
+        ),
+        nullable=False,
+        server_default=StatementProcessingStatus.PENDING.value,
+    )
 
     __table_args__ += (
         ForeignKeyConstraint(["user_id"], ["users.id"], ondelete="RESTRICT"),
+        ForeignKeyConstraint(
+            ["financial_period_id", "user_id"],
+            ["financial_periods.id", "financial_periods.user_id"],
+            ondelete="RESTRICT",
+        ),
     )
 
 

@@ -3,6 +3,7 @@
 from .orm_models import (
     Base,
     DuplicateCandidateModel,
+    FinancialPeriodModel,
     ParsedStatementRowModel,
     StatementSourceModel,
     TransactionModel,
@@ -12,6 +13,7 @@ from .orm_models import (
 __all__ = [
     "Base",
     "DuplicateCandidateModel",
+    "FinancialPeriodModel",
     "ParsedStatementRowModel",
     "StatementSourceModel",
     "TransactionModel",

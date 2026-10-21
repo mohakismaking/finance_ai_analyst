@@ -38,6 +38,12 @@ class DuplicateCandidateStatus(StrEnum):
     NOT_A_DUPLICATE = "not_a_duplicate"
 
 
+class StatementProcessingStatus(StrEnum):
+    """Lifecycle state for a statement before transaction extraction exists."""
+
+    PENDING = "pending"
+
+
 def _require_non_empty(value: str, field_name: str) -> None:
     if not value.strip():
         raise ValueError(f"{field_name} must not be empty")
@@ -81,6 +87,8 @@ class StatementSource:
     storage_key: str
     content_sha256: str
     uploaded_at: datetime
+    financial_period_id: UUID | None = None
+    processing_status: StatementProcessingStatus = StatementProcessingStatus.PENDING
     id: UUID = field(default_factory=uuid4)
 
     def __post_init__(self) -> None:
@@ -92,6 +100,20 @@ class StatementSource:
         ):
             _require_non_empty(getattr(self, field_name), field_name)
         _require_utc(self.uploaded_at, "uploaded_at")
+
+
+@dataclass(frozen=True, slots=True)
+class FinancialPeriod:
+    """A user-owned reporting period to which statements are assigned."""
+
+    user_id: UUID
+    starts_on: date
+    ends_on: date
+    id: UUID = field(default_factory=uuid4)
+
+    def __post_init__(self) -> None:
+        if self.ends_on < self.starts_on:
+            raise ValueError("ends_on must not be before starts_on")
 
 
 @dataclass(frozen=True, slots=True)
