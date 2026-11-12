@@ -3,8 +3,10 @@
 from packages.domain.models import (
     DuplicateCandidate,
     DuplicateCandidateStatus,
+    FinancialPeriod,
     ParsedStatementRow,
     StatementSource,
+    StatementProcessingStatus,
     Transaction,
     TransactionDirection,
     TransactionStatus,
@@ -14,8 +16,10 @@ from packages.domain.models import (
 __all__ = [
     "DuplicateCandidate",
     "DuplicateCandidateStatus",
+    "FinancialPeriod",
     "ParsedStatementRow",
     "StatementSource",
+    "StatementProcessingStatus",
     "Transaction",
     "TransactionDirection",
     "TransactionStatus",
