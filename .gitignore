@@ -9,5 +9,11 @@ wheels/
 # Virtual environments
 .venv
 
+# IDE generated files
+.idea/
+
+# ENV file
+.env
+
 # Local immutable statement uploads
 data/uploads/
